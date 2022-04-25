@@ -11,6 +11,9 @@ from django.views.generic import TemplateView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework.authtoken.views import obtain_auth_token
 {%- endif %}
+{%- if cookiecutter.use_graphql == 'y' %}
+from graphene_django.views import GraphQLView
+{% endif %}
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
@@ -42,6 +45,12 @@ urlpatterns += [
         SpectacularSwaggerView.as_view(url_name="api-schema"),
         name="api-docs",
     ),
+]
+{%- endif %}
+{% if cookiecutter.use_graphql == 'y' %}
+urlpatterns += [
+    # GraphQL endpoint
+    path("graphql/", GraphQLView.as_view(graphiql=True)),
 ]
 {%- endif %}
 

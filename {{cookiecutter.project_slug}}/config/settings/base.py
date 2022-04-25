@@ -1,6 +1,12 @@
 """
 Base settings to build other settings files upon.
 """
+{% if cookiecutter.use_graphql == 'y' %}
+import django
+from django.utils.encoding import force_str
+django.utils.encoding.force_text = force_str
+{%- endif %}
+
 from pathlib import Path
 
 import environ
@@ -86,8 +92,13 @@ THIRD_PARTY_APPS = [
 {%- if cookiecutter.use_drf == "y" %}
     "rest_framework",
     "rest_framework.authtoken",
-    "corsheaders",
     "drf_spectacular",
+{%- endif %}
+{%- if cookiecutter.use_graphql == 'y' %}
+    "graphene_django",
+{%- endif %}
+{%- if cookiecutter.use_drf == "y" or cookiecutter.use_graphql == 'y' %}
+    "corsheaders",
 {%- endif %}
 ]
 
@@ -142,7 +153,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-{%- if cookiecutter.use_drf == 'y' %}
+{%- if cookiecutter.use_drf == 'y' or cookiecutter.use_graphql == 'y' %}
     "corsheaders.middleware.CorsMiddleware",
 {%- endif %}
 {%- if cookiecutter.use_whitenoise == 'y' %}
@@ -352,5 +363,28 @@ SPECTACULAR_SETTINGS = {
     ],
 }
 {%- endif %}
+{% if cookiecutter.use_graphql == 'y' -%}
+# Django GraphQL with graphene
+# ------------------------------------------------------------------------------
+# graphene-django - https://github.com/graphql-python/graphene-django/blob/master/docs/settings.rst
+GRAPHENE = {
+    "SCHEMA": "config.schema.schema",
+    "MIDDLEWARE": [
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
+        "graphql_jwt.middleware.EnsureFreshJWTMiddleware",
+        "graphql_jwt.middleware.EnsureFreshJWTMiddleware",
+        "graphql_jwt.middleware.PersistedJWTMiddleware",
+    ],
+    "RELAY_CONNECTION_MAX_LIMIT": 100,
+    "EXPOSE_GRAPHQL_ERRORS": True,
+}
+
+# django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
+# add or edit as necessary
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",    # for use with frontends like vue or svelte
+]
+{%- endif %}
+
 # Your stuff...
 # ------------------------------------------------------------------------------
