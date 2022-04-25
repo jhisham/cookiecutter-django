@@ -326,6 +326,10 @@ def remove_drf_starter_files():
             "{{cookiecutter.project_slug}}", "users", "tests", "test_swagger.py"
         )
     )
+    
+    
+def remove_graphql_starter_files():
+    os.remove(os.path.join("config", "schema.py"))
 
 
 def remove_storages_module():
@@ -412,6 +416,9 @@ def main():
 
     if "{{ cookiecutter.use_drf }}".lower() == "n":
         remove_drf_starter_files()
+        
+    if "{{ cookiecutter.use_graphql }}".lower() == "n":
+        remove_graphql_starter_files()
 
     if "{{ cookiecutter.use_async }}".lower() == "n":
         remove_async_files()
